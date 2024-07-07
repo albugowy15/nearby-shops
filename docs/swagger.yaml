@@ -1,0 +1,229 @@
+basePath: /v1
+definitions:
+  model.DataResponse:
+    properties:
+      data: {}
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  model.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  model.ShopLongResponse:
+    properties:
+      city:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+  model.ShopResponse:
+    properties:
+      distance:
+        type: number
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact:
+    email: kholidbughowi@gmail.com
+    name: Mohamad Kholid Bughowi
+    url: https://bughowi.com
+  description: This is swagger documentation for Nearby Shops REST API.
+  title: Nearby Shops Swagger Documentation
+  version: "1.0"
+paths:
+  /shops:
+    get:
+      consumes:
+      - application/json
+      description: Search nearby shops
+      parameters:
+      - description: Search nearby shops by maxDistance
+        in: query
+        name: maxDistance
+        required: true
+        type: integer
+      - description: Search nearby shops by Longitude
+        in: query
+        name: lon
+        required: true
+        type: number
+      - description: Search nearby shops by Latitude
+        in: query
+        name: lat
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.DataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.ShopResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Search nearby shops
+      tags:
+      - Shop
+    post:
+      consumes:
+      - application/json
+      description: Create a new shop
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Create a new shop
+      tags:
+      - Shop
+  /shops/{shopId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a shop
+      parameters:
+      - description: Shop ID
+        in: path
+        name: shopId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Delete a shop
+      tags:
+      - Shop
+    get:
+      consumes:
+      - application/json
+      description: Get detail information about a shop
+      parameters:
+      - description: Shop ID
+        in: path
+        name: shopId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ShopLongResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get a shop details
+      tags:
+      - Shop
+    put:
+      consumes:
+      - application/json
+      description: Update a shop
+      parameters:
+      - description: Shop ID
+        in: path
+        name: shopId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Update a shop
+      tags:
+      - Shop
+swagger: "2.0"

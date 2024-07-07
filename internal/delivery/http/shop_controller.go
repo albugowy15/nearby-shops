@@ -23,6 +23,17 @@ func NewShopController(useCase *usecase.ShopUseCase, validator *config.Validator
 	}
 }
 
+// ShopController.Create godoc
+//
+//	@Summary		Create a new shop
+//	@Description	Create a new shop
+//	@Tags			Shop
+//	@Accept			json
+//	@Produce		json
+//	@Success		201	{object}	model.MessageResponse
+//	@Failure		400	{object}	model.ErrorResponse
+//	@Failure		500	{object}	model.ErrorResponse
+//	@Router			/shops [post]
 func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 	createShopRequest := &model.CreateShopRequest{}
 	err := httputils.GetBody(r, createShopRequest)
@@ -44,6 +55,19 @@ func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 	httputils.SendMessage(w, "shop created", http.StatusCreated)
 }
 
+// ShopController.Get godoc
+//
+//	@Summary		Get a shop details
+//	@Description	Get detail information about a shop
+//	@Tags			Shop
+//	@Accept			json
+//	@Produce		json
+//	@Param			shopId	path		string	true	"Shop ID"
+//	@Success		200		{object}	model.DataResponse{data=model.ShopLongResponse}
+//	@Failure		400		{object}	model.ErrorResponse
+//	@Failure		404		{object}	model.ErrorResponse
+//	@Failure		500		{object}	model.ErrorResponse
+//	@Router			/shops/{shopId} [get]
 func (c *ShopController) Get(w http.ResponseWriter, r *http.Request) {
 	shopIdPath := r.PathValue("shopId")
 	if len(shopIdPath) == 0 {
@@ -51,10 +75,10 @@ func (c *ShopController) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	shopId, err := strconv.ParseInt(shopIdPath, 10, 64)
-  if err != nil {
+	if err != nil {
 		httputils.SendError(w, errors.New("shopId must be integer"), http.StatusBadRequest)
-    return
-  }
+		return
+	}
 	getShopRequest := &model.GetShopRequest{
 		ID: shopId,
 	}
@@ -67,6 +91,19 @@ func (c *ShopController) Get(w http.ResponseWriter, r *http.Request) {
 	httputils.SendData(w, getShopResponse, http.StatusCreated)
 }
 
+// ShopController.Delete godoc
+//
+//	@Summary		Delete a shop
+//	@Description	Delete a shop
+//	@Tags			Shop
+//	@Accept			json
+//	@Produce		json
+//	@Param			shopId	path		string	true	"Shop ID"
+//	@Success		200		{object}	model.MessageResponse
+//	@Failure		400		{object}	model.ErrorResponse
+//	@Failure		404		{object}	model.ErrorResponse
+//	@Failure		500		{object}	model.ErrorResponse
+//	@Router			/shops/{shopId} [delete]
 func (c *ShopController) Delete(w http.ResponseWriter, r *http.Request) {
 	shopIdPath := r.PathValue("shopId")
 	if len(shopIdPath) == 0 {
@@ -74,10 +111,10 @@ func (c *ShopController) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	shopId, err := strconv.ParseInt(shopIdPath, 10, 64)
-  if err != nil {
+	if err != nil {
 		httputils.SendError(w, errors.New("shopId must be integer"), http.StatusBadRequest)
-    return
-  }
+		return
+	}
 	deleteShopRequest := &model.DeleteShopRequest{
 		ID: shopId,
 	}
@@ -90,6 +127,19 @@ func (c *ShopController) Delete(w http.ResponseWriter, r *http.Request) {
 	httputils.SendMessage(w, "shop deleted", http.StatusCreated)
 }
 
+// ShopController.Update godoc
+//
+//	@Summary		Update a shop
+//	@Description	Update a shop
+//	@Tags			Shop
+//	@Accept			json
+//	@Produce		json
+//	@Param			shopId	path		string	true	"Shop ID"
+//	@Success		200		{object}	model.MessageResponse
+//	@Failure		400		{object}	model.ErrorResponse
+//	@Failure		404		{object}	model.ErrorResponse
+//	@Failure		500		{object}	model.ErrorResponse
+//	@Router			/shops/{shopId} [put]
 func (c *ShopController) Update(w http.ResponseWriter, r *http.Request) {
 	updateShopRequest := &model.UpdateShopRequest{}
 	err := httputils.GetBody(r, updateShopRequest)
@@ -111,6 +161,20 @@ func (c *ShopController) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.SendMessage(w, "shop updated", http.StatusCreated)
 }
 
+// ShopController.Search godoc
+//
+//	@Summary		Search nearby shops
+//	@Description	Search nearby shops
+//	@Tags			Shop
+//	@Accept			json
+//	@Produce		json
+//	@Param			maxDistance	query		integer	true	"Search nearby shops by maxDistance"
+//	@Param			lon			query		number	true	"Search nearby shops by Longitude"
+//	@Param			lat			query		number	true	"Search nearby shops by Latitude"
+//	@Success		200			{object}	model.DataResponse{data=[]model.ShopResponse}
+//	@Failure		400			{object}	model.ErrorResponse
+//	@Failure		500			{object}	model.ErrorResponse
+//	@Router			/shops [get]
 func (c *ShopController) Search(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 	maxDistanceRaw := queryParams.Get("maxDistance")

@@ -9,6 +9,7 @@ import (
 type ViperConfig struct {
 	DatabaseUrl string `mapstructure:"DATABASE_URL"`
 	Port        string `mapstructure:"PORT"`
+	BaseUrl     string `mapstructure:"BASE_URL"`
 }
 
 func NewViper() *viper.Viper {

@@ -15,3 +15,6 @@ build:
 
 start:
 	@./tmp/main
+
+doc:
+	@swag init -d "./" -g "cmd/web/main.go"

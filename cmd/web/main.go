@@ -5,6 +5,7 @@ import (
 	"log"
 	httpx "net/http"
 
+	"github.com/albugowy15/nearby-shops/docs"
 	"github.com/albugowy15/nearby-shops/internal/config"
 	"github.com/albugowy15/nearby-shops/internal/delivery/http"
 	"github.com/albugowy15/nearby-shops/internal/delivery/http/route"
@@ -13,6 +14,18 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+//	@title			Nearby Shops Swagger Documentation
+//	@version		1.0
+//	@description	This is swagger documentation for Nearby Shops REST API.
+
+//	@contact.name	Mohamad Kholid Bughowi
+//	@contact.url	https://bughowi.com
+//	@contact.email	kholidbughowi@gmail.com
+
+//	@BasePath	/v1
+
+//	@externalDocs.description	OpenAPI
+//	@externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
 	viperConfig := config.NewViper()
 	validatorConfig := config.NewValidator(viperConfig)
@@ -34,7 +47,11 @@ func main() {
 	}
 	route.Setup()
 
-	address := fmt.Sprintf("localhost:%s", viperConfig.GetString("PORT"))
-	log.Printf("Server running on port %s", viperConfig.GetString("PORT"))
+  port := viperConfig.GetString("PORT")
+  baseUrl := viperConfig.GetString("BASE_URL")
+
+  docs.SwaggerInfo.Host = baseUrl
+	address := fmt.Sprintf(":%s", port)
+	log.Printf("Server running on port %s", port)
 	httpx.ListenAndServe(address, app)
 }
