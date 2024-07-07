@@ -18,3 +18,6 @@ start:
 
 doc:
 	@swag init -d "./" -g "cmd/web/main.go"
+
+seeder:
+	@go run cmd/seeder/main.go
