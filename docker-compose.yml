@@ -1,9 +1,26 @@
 services:
+  app:
+    depends_on:
+      - database
+    build:
+      context: .
+    container_name: nearby-shops-api
+    networks:
+      - mynet
+    ports:
+      - 8080:8080
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@shops_db:5432/dbshops?sslmode=disable
+      PORT: 8080
+    deploy:
+      restart_policy:
+        condition: on-failure
+
   database:
     image: postgis/postgis:16-3.4
     container_name: shops_db
     hostname: shops_db
-    networks: 
+    networks:
       - mynet
     restart: always
     ports:
