@@ -29,11 +29,11 @@ func NewValidator(viper *viper.Viper) *ValidatorConfig {
 }
 
 func (c *ValidatorConfig) ValidateStruct(s interface{}) error {
-  err := c.Validate.Struct(s)
+	err := c.Validate.Struct(s)
 	if err != nil {
 		errs := err.(validator.ValidationErrors)
 		firstErr := errors.New(errs[0].Translate(c.Translator))
 		return firstErr
 	}
-  return nil
+	return nil
 }

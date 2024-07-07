@@ -24,8 +24,8 @@ import (
 
 //	@BasePath	/v1
 
-//	@externalDocs.description	OpenAPI
-//	@externalDocs.url			https://swagger.io/resources/open-api/
+// @externalDocs.description	OpenAPI
+// @externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
 	viperConfig := config.NewViper()
 	validatorConfig := config.NewValidator(viperConfig)
@@ -47,10 +47,10 @@ func main() {
 	}
 	route.Setup()
 
-  port := viperConfig.GetString("PORT")
-  baseUrl := viperConfig.GetString("BASE_URL")
+	port := viperConfig.GetString("PORT")
+	baseUrl := viperConfig.GetString("BASE_URL")
 
-  docs.SwaggerInfo.Host = baseUrl
+	docs.SwaggerInfo.Host = baseUrl
 	address := fmt.Sprintf(":%s", port)
 	log.Printf("Server running on port %s", port)
 	httpx.ListenAndServe(address, app)

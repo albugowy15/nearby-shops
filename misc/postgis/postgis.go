@@ -17,18 +17,18 @@ type PostGisGeo struct {
 }
 
 func NewFromPoint(point Point) *PostGisGeo {
-  return &PostGisGeo{
-    Srid: "4326",
-    Point: point,
-  }
+	return &PostGisGeo{
+		Srid:  "4326",
+		Point: point,
+	}
 }
 
 func NewFromEwkt(raw string) (*PostGisGeo, error) {
 	// sample: SRID=4326;POINT(12 121)
 	split := strings.Split(raw, ";")
-  if len(split) != 2 {
-    return nil, errors.New("ewkt is not valid")
-  }
+	if len(split) != 2 {
+		return nil, errors.New("ewkt is not valid")
+	}
 	srid := strings.Split(split[0], "=")[1]
 	point, _ := strings.CutPrefix(split[1], "POINT")
 	lonlat := strings.TrimPrefix(point, "(")
