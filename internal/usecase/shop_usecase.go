@@ -104,7 +104,27 @@ func (uc *ShopUseCase) Search(request *model.SearchShopRequest) ([]model.ShopRes
 	return shops, nil
 }
 
-func (uc *ShopUseCase) Update(request *model.UpdateShopRequest) error {
+func (uc *ShopUseCase) Update(request *model.UpdateShopRequest, id int64) error {
+	isRowExist, err := uc.ShopRepository.CheckRowExist(id)
+	if err != nil {
+		return NewUseCaseError("error fetching data from database", http.StatusInternalServerError)
+	}
+	if !isRowExist {
+		return NewUseCaseError(fmt.Sprintf("shop with id %d not found", id), http.StatusNotFound)
+	}
+	point := postgis.NewFromPoint(postgis.Point{Lon: request.Longitude, Lat: request.Latitude})
+	value := entity.Shop{
+		Name:     request.Name,
+		City:     request.City,
+		Location: point.Ewkt(),
+	}
+	if len(request.Description) != 0 {
+		value.Description = sql.NullString{Valid: true, String: request.Description}
+	}
+
+	if err := uc.ShopRepository.Update(id, value); err != nil {
+		return NewUseCaseError("error update row from database", http.StatusInternalServerError)
+	}
 	return nil
 }
 

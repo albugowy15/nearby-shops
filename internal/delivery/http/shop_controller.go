@@ -30,9 +30,10 @@ func NewShopController(useCase *usecase.ShopUseCase, validator *config.Validator
 //	@Tags			Shop
 //	@Accept			json
 //	@Produce		json
-//	@Success		201	{object}	model.MessageResponse
-//	@Failure		400	{object}	model.ErrorResponse
-//	@Failure		500	{object}	model.ErrorResponse
+//	@Param			body	body		model.CreateShopRequest	true	"Create shop request body"
+//	@Success		201		{object}	model.MessageResponse
+//	@Failure		400		{object}	model.ErrorResponse
+//	@Failure		500		{object}	model.ErrorResponse
 //	@Router			/shops [post]
 func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 	createShopRequest := &model.CreateShopRequest{}
@@ -44,6 +45,11 @@ func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 	err = c.Validator.ValidateStruct(createShopRequest)
 	if err != nil {
 		httputils.SendError(w, err, http.StatusBadRequest)
+		return
+	}
+	descLen := len(createShopRequest.Description)
+	if descLen != 0 && (descLen < 30 || descLen > 300) {
+		httputils.SendError(w, errors.New("description must be between 30 to 300 characters"), http.StatusBadRequest)
 		return
 	}
 	err = c.UseCase.Create(createShopRequest)
@@ -134,26 +140,39 @@ func (c *ShopController) Delete(w http.ResponseWriter, r *http.Request) {
 //	@Tags			Shop
 //	@Accept			json
 //	@Produce		json
-//	@Param			shopId	path		string	true	"Shop ID"
+//	@Param			shopId	path		string					true	"Shop ID"
+//	@Param			body	body		model.UpdateShopRequest	true	"Update shop request body"
 //	@Success		200		{object}	model.MessageResponse
 //	@Failure		400		{object}	model.ErrorResponse
 //	@Failure		404		{object}	model.ErrorResponse
 //	@Failure		500		{object}	model.ErrorResponse
 //	@Router			/shops/{shopId} [put]
 func (c *ShopController) Update(w http.ResponseWriter, r *http.Request) {
-	updateShopRequest := &model.UpdateShopRequest{}
-	err := httputils.GetBody(r, updateShopRequest)
+	shopIdPath := r.PathValue("shopId")
+	if len(shopIdPath) == 0 {
+		httputils.SendError(w, errors.New("missing shopId path value"), http.StatusBadRequest)
+		return
+	}
+	shopId, err := strconv.ParseInt(shopIdPath, 10, 64)
 	if err != nil {
+		httputils.SendError(w, errors.New("shopId must be integer"), http.StatusBadRequest)
+		return
+	}
+	updateShopRequest := &model.UpdateShopRequest{}
+	if err := httputils.GetBody(r, updateShopRequest); err != nil {
 		httputils.SendError(w, httputils.ErrDecodeJsonBody, http.StatusBadRequest)
 		return
 	}
-	err = c.Validator.ValidateStruct(updateShopRequest)
-	if err != nil {
+	if err := c.Validator.ValidateStruct(updateShopRequest); err != nil {
 		httputils.SendError(w, err, http.StatusBadRequest)
 		return
 	}
-	err = c.UseCase.Update(updateShopRequest)
-	if err != nil {
+	descLen := len(updateShopRequest.Description)
+	if descLen != 0 && (descLen < 30 || descLen > 300) {
+		httputils.SendError(w, errors.New("description must be between 30 to 300 characters"), http.StatusBadRequest)
+		return
+	}
+	if err := c.UseCase.Update(updateShopRequest, shopId); err != nil {
 		ucErr := err.(usecase.UseCaseError)
 		httputils.SendError(w, ucErr, ucErr.Code)
 		return

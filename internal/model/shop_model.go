@@ -3,36 +3,37 @@ package model
 import "time"
 
 type ShopResponse struct {
-	ID        int64   `json:"id"`
 	Name      string  `json:"name"`
+	ID        int64   `json:"id"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 	Distance  float64 `json:"distance"`
 }
 
 type ShopLongResponse struct {
-	ID          int64     `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	City        string    `json:"city"`
+	ID          int64     `json:"id"`
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
-	CreatedAt   time.Time `json:"created_at"`
 }
 
 type CreateShopRequest struct {
 	Name        string  `json:"name" validate:"required,max=100"`
 	Description string  `json:"description,omitempty"`
+	City        string  `json:"city" validate:"required,max=50"`
 	Latitude    float64 `json:"latitude" validate:"required"`
 	Longitude   float64 `json:"longitude" validate:"required"`
-	City        string  `json:"city" validate:"required"`
 }
 
 type UpdateShopRequest struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Latitude    float64 `json:"latitude"`
-	Longitude   float64 `json:"longitude"`
+	Name        string  `json:"name" validate:"required,max=100"`
+	Description string  `json:"description,omitempty"`
+	City        string  `json:"city" validate:"required,max=50"`
+	Latitude    float64 `json:"latitude" validate:"required"`
+	Longitude   float64 `json:"longitude" validate:"required"`
 }
 
 type DeleteShopRequest struct {

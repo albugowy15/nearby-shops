@@ -21,20 +21,21 @@ func NewShopRepository(db *sqlx.DB) *ShopRepository {
 }
 
 type FilterByLocationResult struct {
-	ID        int64     `db:"id"`
+	CreatedAt time.Time `db:"created_at"`
 	Name      string    `db:"name"`
 	City      string    `db:"city"`
 	Location  string    `db:"location"`
+	ID        int64     `db:"id"`
 	Distance  float64   `db:"distance"`
-	CreatedAt time.Time `db:"created_at"`
 }
+
 type FindByIdResult struct {
-	ID          int64          `db:"id"`
+	CreatedAt   time.Time      `db:"created_at"`
 	Name        string         `db:"name"`
 	City        string         `db:"city"`
 	Location    string         `db:"location"`
 	Description sql.NullString `db:"description"`
-	CreatedAt   time.Time      `db:"created_at"`
+	ID          int64          `db:"id"`
 }
 
 func (r *ShopRepository) FilterByLocation(maxDistance int64, point postgis.PostGisGeo) ([]FilterByLocationResult, error) {
@@ -108,4 +109,25 @@ func (r *ShopRepository) Delete(shopId int64) error {
 	}
 
 	return err
+}
+
+func (r *ShopRepository) Update(shopId int64, value entity.Shop) error {
+	tx, err := r.DB.Beginx()
+	if err != nil {
+		log.Printf("db err: %v", err)
+		return err
+	}
+	defer tx.Commit()
+	_, err = tx.Exec(
+		`update shops
+    set name = $1, city = $2, location = $3, description = $4 
+    where id = $5`,
+		value.Name, value.City, value.Location, value.Description, shopId,
+	)
+	if err != nil {
+		log.Printf("db err: %v", err)
+		tx.Rollback()
+		return err
+	}
+	return nil
 }
