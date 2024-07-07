@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/albugowy15/nearby-shops/internal/config"
 	"github.com/albugowy15/nearby-shops/internal/model"
@@ -40,7 +41,7 @@ func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 		httputils.SendError(w, ucErr, ucErr.Code)
 		return
 	}
-	httputils.SendData(w, "shop created", http.StatusCreated)
+	httputils.SendMessage(w, "shop created", http.StatusCreated)
 }
 
 func (c *ShopController) Get(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +101,48 @@ func (c *ShopController) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.SendMessage(w, "shop updated", http.StatusCreated)
 }
 
-func (c *ShopController) List(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
-	w.Write([]byte("hello"))
+func (c *ShopController) Search(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	maxDistanceRaw := queryParams.Get("maxDistance")
+	if len(maxDistanceRaw) == 0 {
+		httputils.SendError(w, errors.New("maxDistance param required"), http.StatusBadRequest)
+		return
+	}
+	longitudeRaw := queryParams.Get("lon")
+	if len(longitudeRaw) == 0 {
+		httputils.SendError(w, errors.New("lon param required"), http.StatusBadRequest)
+		return
+	}
+	latitudeRaw := queryParams.Get("lat")
+	if len(latitudeRaw) == 0 {
+		httputils.SendError(w, errors.New("lat param required"), http.StatusBadRequest)
+		return
+	}
+
+	maxDistance, err := strconv.ParseInt(maxDistanceRaw, 10, 64)
+	if err != nil {
+		httputils.SendError(w, errors.New("maxDistance param must be integer"), http.StatusBadRequest)
+		return
+	}
+	longitude, err := strconv.ParseFloat(longitudeRaw, 64)
+	if err != nil {
+		httputils.SendError(w, errors.New("lon param must be integer"), http.StatusBadRequest)
+		return
+	}
+	latitude, err := strconv.ParseFloat(latitudeRaw, 64)
+	if err != nil {
+		httputils.SendError(w, errors.New("lat param must be integer"), http.StatusBadRequest)
+		return
+	}
+	data, err := c.UseCase.Search(&model.SearchShopRequest{
+		MaxDistance: maxDistance,
+		Longitude:   longitude,
+		Latitude:    latitude,
+	})
+	if err != nil {
+		ucErr := err.(usecase.UseCaseError)
+		httputils.SendError(w, ucErr, ucErr.Code)
+		return
+	}
+	httputils.SendData(w, data, http.StatusCreated)
 }

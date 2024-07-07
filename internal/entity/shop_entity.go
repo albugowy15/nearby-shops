@@ -1,11 +1,17 @@
 package entity
 
+import (
+	"database/sql"
+	"time"
+)
+
 type Shop struct {
-	ID          int64  `db:"id"`
-	Name        int64  `db:"name"`
-	Description int64  `db:"description"`
-	Location    string `db:"location"`
-	CreatedAt   int64  `db:"created_at"`
+	ID          int64          `db:"id"`
+	Name        string         `db:"name"`
+	Description sql.NullString `db:"description"`
+	City        string         `db:"city"`
+	Location    string         `db:"location"`
+	CreatedAt   time.Time      `db:"created_at"`
 }
 
 func (e *Shop) TableName() string {

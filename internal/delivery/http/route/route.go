@@ -18,7 +18,7 @@ func (rc *RouteConfig) Setup() {
 	rc.App.Use(middleware.Compress(5, "text/html", "application/json"))
 
 	rc.App.Route("/v1", func(r chi.Router) {
-		r.Get("/shops", rc.ShopController.List)
+		r.Get("/shops", rc.ShopController.Search)
 		r.Get("/shops/{shopId}", rc.ShopController.Get)
 		r.Post("/shops", rc.ShopController.Create)
 		r.Put("/shops/{shopId}", rc.ShopController.Update)

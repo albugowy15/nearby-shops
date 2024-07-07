@@ -5,8 +5,8 @@ type UseCaseError struct {
 	Code    int
 }
 
-func NewUseCaseError(msg string, code int) *UseCaseError {
-	return &UseCaseError{
+func NewUseCaseError(msg string, code int) UseCaseError {
+	return UseCaseError{
 		Message: msg,
 		Code:    code,
 	}
