@@ -4,6 +4,9 @@ migrate_up:
 migrate_down:
 	@go run cmd/migrations/down/main.go
 
+seeder:
+	@go run cmd/seeder/main.go
+
 dev:
 	@air
 
@@ -17,7 +20,5 @@ start:
 	@./tmp/main
 
 doc:
-	@swag init -d "./" -g "cmd/web/main.go"
+	@swag fmt && swag init -d "./" -g "cmd/web/main.go"
 
-seeder:
-	@go run cmd/seeder/main.go

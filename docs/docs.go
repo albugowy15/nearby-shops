@@ -103,6 +103,17 @@ const docTemplate = `{
                     "Shop"
                 ],
                 "summary": "Create a new shop",
+                "parameters": [
+                    {
+                        "description": "Create shop request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateShopRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -205,6 +216,15 @@ const docTemplate = `{
                         "name": "shopId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Update shop request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateShopRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -285,6 +305,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.CreateShopRequest": {
+            "type": "object",
+            "required": [
+                "city",
+                "latitude",
+                "longitude",
+                "name"
+            ],
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
         "model.DataResponse": {
             "type": "object",
             "properties": {
@@ -350,6 +398,34 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "model.UpdateShopRequest": {
+            "type": "object",
+            "required": [
+                "city",
+                "latitude",
+                "longitude",
+                "name"
+            ],
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100
                 }
             }
         }
