@@ -6,12 +6,12 @@ import (
 )
 
 type Shop struct {
-	ID          int64          `db:"id"`
+	CreatedAt   time.Time      `db:"created_at"`
 	Name        string         `db:"name"`
-	Description sql.NullString `db:"description"`
 	City        string         `db:"city"`
 	Location    string         `db:"location"`
-	CreatedAt   time.Time      `db:"created_at"`
+	Description sql.NullString `db:"description"`
+	ID          int64          `db:"id"`
 }
 
 func (e *Shop) TableName() string {

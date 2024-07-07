@@ -41,8 +41,8 @@ func (uc *ShopUseCase) Create(request *model.CreateShopRequest) error {
 	})
 
 	shopValue.Location = locationPoint.Ewkt()
-	err := uc.ShopRepository.Insert(shopValue)
-	if err != nil {
+
+	if err := uc.ShopRepository.Insert(shopValue); err != nil {
 		return NewUseCaseError("error inserting data into database", http.StatusInternalServerError)
 	}
 	return nil
@@ -129,7 +129,6 @@ func (uc *ShopUseCase) Update(request *model.UpdateShopRequest, id int64) error 
 }
 
 func (uc *ShopUseCase) Delete(request *model.DeleteShopRequest) error {
-	// check if exist
 	isRowExist, err := uc.ShopRepository.CheckRowExist(request.ID)
 	if err != nil {
 		return NewUseCaseError("error fetching data from database", http.StatusInternalServerError)
@@ -137,7 +136,6 @@ func (uc *ShopUseCase) Delete(request *model.DeleteShopRequest) error {
 	if !isRowExist {
 		return NewUseCaseError(fmt.Sprintf("shop with id %d not found", request.ID), http.StatusNotFound)
 	}
-	// do delete
 	if err := uc.ShopRepository.Delete(request.ID); err != nil {
 		return NewUseCaseError("error delete row from database", http.StatusInternalServerError)
 	}

@@ -11,7 +11,6 @@ RUN go test -v ./...
 FROM gcr.io/distroless/static-debian12 AS build-release-stage
 WORKDIR /
 COPY --from=build-stage /nearby-shops-api /nearby-shops-api
-COPY app.env.example app.env
 EXPOSE 8080
 USER nonroot:nonroot
 ENTRYPOINT ["/nearby-shops-api"]

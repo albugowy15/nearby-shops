@@ -48,9 +48,8 @@ func main() {
 	route.Setup()
 
 	port := viperConfig.GetString("PORT")
-	baseUrl := viperConfig.GetString("BASE_URL")
 
-	docs.SwaggerInfo.Host = baseUrl
+	docs.SwaggerInfo.Host = viperConfig.GetString("BASE_URL")
 	address := fmt.Sprintf(":%s", port)
 	log.Printf("Server running on port %s", port)
 	httpx.ListenAndServe(address, app)

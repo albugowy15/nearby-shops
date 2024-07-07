@@ -37,23 +37,24 @@ func NewShopController(useCase *usecase.ShopUseCase, validator *config.Validator
 //	@Router			/shops [post]
 func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 	createShopRequest := &model.CreateShopRequest{}
-	err := httputils.GetBody(r, createShopRequest)
-	if err != nil {
+
+	if err := httputils.GetBody(r, createShopRequest); err != nil {
 		httputils.SendError(w, httputils.ErrDecodeJsonBody, http.StatusBadRequest)
 		return
 	}
-	err = c.Validator.ValidateStruct(createShopRequest)
-	if err != nil {
+
+	if err := c.Validator.ValidateStruct(createShopRequest); err != nil {
 		httputils.SendError(w, err, http.StatusBadRequest)
 		return
 	}
+
 	descLen := len(createShopRequest.Description)
 	if descLen != 0 && (descLen < 30 || descLen > 300) {
 		httputils.SendError(w, errors.New("description must be between 30 to 300 characters"), http.StatusBadRequest)
 		return
 	}
-	err = c.UseCase.Create(createShopRequest)
-	if err != nil {
+
+	if err := c.UseCase.Create(createShopRequest); err != nil {
 		ucErr := err.(usecase.UseCaseError)
 		httputils.SendError(w, ucErr, ucErr.Code)
 		return
@@ -124,8 +125,8 @@ func (c *ShopController) Delete(w http.ResponseWriter, r *http.Request) {
 	deleteShopRequest := &model.DeleteShopRequest{
 		ID: shopId,
 	}
-	err = c.UseCase.Delete(deleteShopRequest)
-	if err != nil {
+
+	if err := c.UseCase.Delete(deleteShopRequest); err != nil {
 		ucErr := err.(usecase.UseCaseError)
 		httputils.SendError(w, ucErr, ucErr.Code)
 		return

@@ -1,0 +1,7 @@
+.git/
+.github/
+tmp/
+app.env
+.air.toml
+Makefile
+*.md

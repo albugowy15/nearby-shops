@@ -59,7 +59,9 @@ func (r *ShopRepository) FilterByLocation(maxDistance int64, point postgis.PostG
 
 func (r *ShopRepository) Insert(value entity.Shop) error {
 	_, err := r.DB.Exec(
-		"insert into shops(name, city, description, location) values ($1, $2, $3, $4)",
+		`
+    insert into shops(name, city, description, location) values ($1, $2, $3, $4)
+    `,
 		value.Name, value.City, value.Description, value.Location,
 	)
 	if err != nil {
@@ -83,7 +85,6 @@ func (r *ShopRepository) FindById(shopId int64) (FindByIdResult, error) {
 	if err != nil {
 		log.Printf("db err: %v", err)
 	}
-
 	return result, err
 }
 
@@ -107,27 +108,20 @@ func (r *ShopRepository) Delete(shopId int64) error {
 	if err != nil {
 		log.Printf("db err: %v", err)
 	}
-
 	return err
 }
 
 func (r *ShopRepository) Update(shopId int64, value entity.Shop) error {
-	tx, err := r.DB.Beginx()
-	if err != nil {
-		log.Printf("db err: %v", err)
-		return err
-	}
-	defer tx.Commit()
-	_, err = tx.Exec(
-		`update shops
+	_, err := r.DB.Exec(
+		`
+    update shops
     set name = $1, city = $2, location = $3, description = $4 
-    where id = $5`,
+    where id = $5
+    `,
 		value.Name, value.City, value.Location, value.Description, shopId,
 	)
 	if err != nil {
 		log.Printf("db err: %v", err)
-		tx.Rollback()
-		return err
 	}
-	return nil
+	return err
 }
