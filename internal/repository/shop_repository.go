@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"log"
 	"time"
 
@@ -26,6 +27,14 @@ type FilterByLocationResult struct {
 	Location  string    `db:"location"`
 	Distance  float64   `db:"distance"`
 	CreatedAt time.Time `db:"created_at"`
+}
+type FindByIdResult struct {
+	ID          int64          `db:"id"`
+	Name        string         `db:"name"`
+	City        string         `db:"city"`
+	Location    string         `db:"location"`
+	Description sql.NullString `db:"description"`
+	CreatedAt   time.Time      `db:"created_at"`
 }
 
 func (r *ShopRepository) FilterByLocation(maxDistance int64, point postgis.PostGisGeo) ([]FilterByLocationResult, error) {
@@ -57,4 +66,46 @@ func (r *ShopRepository) Insert(value entity.Shop) error {
 		return err
 	}
 	return nil
+}
+
+func (r *ShopRepository) FindById(shopId int64) (FindByIdResult, error) {
+	result := FindByIdResult{}
+	err := r.DB.Get(
+		&result,
+		`
+    select id, name, city, st_asewkt(location) as location, description, created_at
+    from shops
+    where id = $1
+    `,
+		shopId,
+	)
+	if err != nil {
+		log.Printf("db err: %v", err)
+	}
+
+	return result, err
+}
+
+func (r *ShopRepository) CheckRowExist(shopId int64) (bool, error) {
+	var resultId int64
+	err := r.DB.Get(&resultId, "select id from shops where id = $1", shopId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func (r *ShopRepository) Delete(shopId int64) error {
+	_, err := r.DB.Exec(
+		`delete from shops where id = $1`,
+		shopId,
+	)
+	if err != nil {
+		log.Printf("db err: %v", err)
+	}
+
+	return err
 }

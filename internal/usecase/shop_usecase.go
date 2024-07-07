@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/albugowy15/nearby-shops/internal/entity"
@@ -48,7 +49,31 @@ func (uc *ShopUseCase) Create(request *model.CreateShopRequest) error {
 }
 
 func (uc *ShopUseCase) Get(request *model.GetShopRequest) (*model.ShopLongResponse, error) {
-	return &model.ShopLongResponse{}, nil
+	findResult, err := uc.ShopRepository.FindById(request.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewUseCaseError(fmt.Sprintf("shop with id %d not found", request.ID), http.StatusNotFound)
+		}
+		return nil, NewUseCaseError("error fetching data from database", http.StatusInternalServerError)
+	}
+
+	point, err := postgis.NewFromEwkt(findResult.Location)
+	if err != nil {
+		return nil, NewUseCaseError("error read location data from database", http.StatusInternalServerError)
+	}
+	shop := &model.ShopLongResponse{
+		ID:        findResult.ID,
+		Name:      findResult.Name,
+		Longitude: point.Point.Lon,
+		Latitude:  point.Point.Lat,
+		City:      findResult.City,
+		CreatedAt: findResult.CreatedAt,
+	}
+	if findResult.Description.Valid {
+		shop.Description = findResult.Description.String
+	}
+
+	return shop, nil
 }
 
 func (uc *ShopUseCase) Search(request *model.SearchShopRequest) ([]model.ShopResponse, error) {
@@ -84,5 +109,17 @@ func (uc *ShopUseCase) Update(request *model.UpdateShopRequest) error {
 }
 
 func (uc *ShopUseCase) Delete(request *model.DeleteShopRequest) error {
+	// check if exist
+	isRowExist, err := uc.ShopRepository.CheckRowExist(request.ID)
+	if err != nil {
+		return NewUseCaseError("error fetching data from database", http.StatusInternalServerError)
+	}
+	if !isRowExist {
+		return NewUseCaseError(fmt.Sprintf("shop with id %d not found", request.ID), http.StatusNotFound)
+	}
+	// do delete
+	if err := uc.ShopRepository.Delete(request.ID); err != nil {
+		return NewUseCaseError("error delete row from database", http.StatusInternalServerError)
+	}
 	return nil
 }

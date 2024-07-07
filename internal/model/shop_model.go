@@ -14,9 +14,9 @@ type ShopLongResponse struct {
 	ID          int64     `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	City        string    `json:"city"`
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
-	Distance    int64     `json:"distance"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
@@ -36,11 +36,11 @@ type UpdateShopRequest struct {
 }
 
 type DeleteShopRequest struct {
-	ID string `json:"id"`
+	ID int64 `json:"id"`
 }
 
 type GetShopRequest struct {
-	ID string `json:"id"`
+	ID int64 `json:"id"`
 }
 
 type SearchShopRequest struct {

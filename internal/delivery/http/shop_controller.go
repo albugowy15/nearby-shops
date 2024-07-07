@@ -45,11 +45,16 @@ func (c *ShopController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *ShopController) Get(w http.ResponseWriter, r *http.Request) {
-	shopId := r.PathValue("shopId")
-	if len(shopId) == 0 {
+	shopIdPath := r.PathValue("shopId")
+	if len(shopIdPath) == 0 {
 		httputils.SendError(w, errors.New("missing shopId path value"), http.StatusBadRequest)
 		return
 	}
+	shopId, err := strconv.ParseInt(shopIdPath, 10, 64)
+  if err != nil {
+		httputils.SendError(w, errors.New("shopId must be integer"), http.StatusBadRequest)
+    return
+  }
 	getShopRequest := &model.GetShopRequest{
 		ID: shopId,
 	}
@@ -63,21 +68,26 @@ func (c *ShopController) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *ShopController) Delete(w http.ResponseWriter, r *http.Request) {
-	shopId := r.PathValue("shopId")
-	if len(shopId) == 0 {
+	shopIdPath := r.PathValue("shopId")
+	if len(shopIdPath) == 0 {
 		httputils.SendError(w, errors.New("missing shopId path value"), http.StatusBadRequest)
 		return
 	}
+	shopId, err := strconv.ParseInt(shopIdPath, 10, 64)
+  if err != nil {
+		httputils.SendError(w, errors.New("shopId must be integer"), http.StatusBadRequest)
+    return
+  }
 	deleteShopRequest := &model.DeleteShopRequest{
 		ID: shopId,
 	}
-	err := c.UseCase.Delete(deleteShopRequest)
+	err = c.UseCase.Delete(deleteShopRequest)
 	if err != nil {
 		ucErr := err.(usecase.UseCaseError)
 		httputils.SendError(w, ucErr, ucErr.Code)
 		return
 	}
-	httputils.SendData(w, "shop deleted", http.StatusCreated)
+	httputils.SendMessage(w, "shop deleted", http.StatusCreated)
 }
 
 func (c *ShopController) Update(w http.ResponseWriter, r *http.Request) {
